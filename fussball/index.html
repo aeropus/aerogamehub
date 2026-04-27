@@ -1,0 +1,1228 @@
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚽ ULTRADROP — FIFA Mobile Style</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #050912;
+  --surface: rgba(255,255,255,0.04);
+  --border: rgba(255,255,255,0.09);
+  --accent: #F5A623;
+  --accent2: #E8375A;
+  --text: #E8EAF0;
+  --muted: #505870;
+  --gold: #FFD700;
+  --green: #00E599;
+  --blue: #3A8FF5;
+  --purple: #9B59F5;
+  --red: #E8375A;
+  --nav-h: 60px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Barlow', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── BACKGROUND ─── */
+.bg-grid {
+  position: fixed; inset: 0; z-index: 0;
+  background-image:
+    linear-gradient(rgba(245,166,35,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245,166,35,0.025) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+.bg-glow {
+  position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 90% 55% at 50% -5%, rgba(245,166,35,0.10) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 45% at 90% 100%, rgba(232,55,90,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 35% at 10% 80%, rgba(58,143,245,0.05) 0%, transparent 60%);
+}
+
+/* ─── LAYOUT ─── */
+.app { position: relative; z-index: 1; max-width: 1000px; margin: 0 auto; padding: 0 12px 80px; }
+
+/* ─── FIFA-STYLE HEADER ─── */
+.header {
+  padding: 18px 0 14px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 14px;
+}
+.logo {
+  font-family: 'Bebas Neue', cursive;
+  font-size: clamp(28px, 5vw, 42px);
+  letter-spacing: 6px;
+  background: linear-gradient(135deg, #FFD700 0%, #F5A623 45%, #E8375A 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 18px rgba(245,166,35,0.35));
+  line-height: 1;
+}
+.logo-sub {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 9px; letter-spacing: 4px;
+  color: var(--muted); margin-top: 3px; text-transform: uppercase;
+}
+.currency-bar {
+  display: flex; gap: 4px; align-items: center;
+}
+.currency-chip {
+  display: flex; align-items: center; gap: 5px;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid var(--border);
+  border-radius: 30px;
+  padding: 5px 12px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 16px; font-weight: 700;
+  min-width: 80px;
+}
+.c-coins { color: var(--gold); }
+.c-gems  { color: #5DADE2; }
+.c-cards { color: var(--green); }
+.chip-icon { font-size: 16px; }
+
+/* ─── FIFA BOTTOM NAV ─── */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
+  background: rgba(5,9,18,0.97);
+  border-top: 1px solid var(--border);
+  backdrop-filter: blur(20px);
+  display: flex;
+  height: var(--nav-h);
+  max-width: 1000px; margin: 0 auto;
+}
+/* Outer fixed wrapper */
+.nav-wrapper {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
+  background: rgba(5,9,18,0.97);
+  border-top: 1px solid var(--border);
+  backdrop-filter: blur(20px);
+}
+.bottom-nav {
+  display: flex;
+  height: var(--nav-h);
+  max-width: 1000px; margin: 0 auto;
+  position: relative; z-index: 1;
+}
+.nav-btn {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 4px;
+  cursor: pointer; background: none; border: none; color: var(--muted);
+  transition: color 0.2s; padding: 0; font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  position: relative;
+}
+.nav-btn.active { color: var(--accent); }
+.nav-btn.active::after {
+  content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 32px; height: 2px; background: var(--accent); border-radius: 0 0 3px 3px;
+}
+.nav-icon { font-size: 22px; line-height: 1; }
+
+/* ─── PANEL ─── */
+.panel { display: none; animation: fadeUp 0.25s ease both; }
+.panel.active { display: block; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── SECTION TITLE ─── */
+.section-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+}
+.section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* ═══════════════════════════════════════════
+   PACKS — FIFA MOBILE STYLE
+═══════════════════════════════════════════ */
+.packs-featured {
+  position: relative; border-radius: 20px; overflow: hidden;
+  background: linear-gradient(135deg, #1a0a00, #2a1200, #0d0d22);
+  border: 1px solid rgba(245,166,35,0.2);
+  padding: 28px 24px; margin-bottom: 14px;
+  display: flex; align-items: center; gap: 24px;
+  cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+}
+.packs-featured:hover { transform: translateY(-3px); box-shadow: 0 20px 60px rgba(245,166,35,0.15); }
+.packs-featured::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse 80% 80% at 20% 50%, rgba(245,166,35,0.12), transparent);
+  pointer-events: none;
+}
+.featured-icon { font-size: 72px; filter: drop-shadow(0 0 24px rgba(245,166,35,0.6)); flex-shrink: 0; position: relative; z-index: 1; }
+@keyframes featuredFloat {
+  0%,100% { transform: translateY(0) rotate(-3deg); }
+  50%      { transform: translateY(-8px) rotate(3deg); }
+}
+.featured-icon { animation: featuredFloat 3s ease-in-out infinite; }
+.featured-info { flex: 1; position: relative; z-index: 1; }
+.featured-badge {
+  display: inline-block; background: var(--accent); color: #000;
+  font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 800;
+  letter-spacing: 2px; padding: 2px 9px; border-radius: 4px; margin-bottom: 8px;
+  text-transform: uppercase;
+}
+.featured-name {
+  font-family: 'Bebas Neue', cursive; font-size: 36px; letter-spacing: 4px;
+  color: #fff; line-height: 1; margin-bottom: 6px;
+}
+.featured-desc { font-size: 13px; color: rgba(255,255,255,0.55); margin-bottom: 14px; line-height: 1.4; }
+.featured-price {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(245,166,35,0.15); border: 1px solid rgba(245,166,35,0.4);
+  border-radius: 30px; padding: 7px 20px;
+  font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700;
+  color: var(--accent);
+}
+.featured-stars { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+
+.packs-row-title { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 3px; color: var(--muted); margin-bottom: 10px; text-transform: uppercase; }
+.packs-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+
+@media (max-width: 500px) {
+  .packs-row { grid-template-columns: repeat(2, 1fr); }
+  .packs-featured { flex-direction: column; text-align: center; padding: 20px; }
+  .featured-icon { font-size: 56px; }
+}
+
+.pack-tile {
+  position: relative; border-radius: 16px;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid var(--border);
+  padding: 16px 10px 14px;
+  text-align: center; cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  overflow: hidden;
+  --tc: #fff;
+}
+.pack-tile::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: var(--tc); border-radius: 16px 16px 0 0;
+}
+.pack-tile::after {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(255,255,255,0.04), transparent);
+  pointer-events: none;
+}
+.pack-tile:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.6), 0 0 0 1px var(--tc);
+  border-color: var(--tc);
+}
+.pack-tile.locked { opacity: 0.4; pointer-events: none; }
+
+.pack-tile-icon { font-size: 38px; display: block; margin-bottom: 8px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5)); position: relative; z-index: 1; }
+.pack-tile-name {
+  font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 800;
+  letter-spacing: 2px; color: #fff; text-transform: uppercase; margin-bottom: 3px; position: relative; z-index: 1;
+}
+.pack-tile-count {
+  font-size: 10px; color: rgba(255,255,255,0.45); margin-bottom: 8px; position: relative; z-index: 1;
+}
+.pack-tile-price {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 14px; border-radius: 20px;
+  font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 700;
+  border: 1px solid var(--tc); color: var(--tc);
+  background: rgba(0,0,0,0.4); position: relative; z-index: 1;
+}
+
+/* ═══════════════════════════════════════════
+   FIFA-STYLE PACK OPENING OVERLAY
+═══════════════════════════════════════════ */
+.pack-opening-overlay {
+  display: none; position: fixed; inset: 0; z-index: 200;
+  background: #050912;
+  flex-direction: column; align-items: center; justify-content: center;
+}
+.pack-opening-overlay.show { display: flex; }
+
+/* Phase 1: Pack animation */
+.pack-phase {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 20px; width: 100%;
+}
+.pack-phase-icon {
+  font-size: 120px;
+  filter: drop-shadow(0 0 40px rgba(245,166,35,0.8));
+}
+@keyframes packIdle {
+  0%,100% { transform: scale(1) rotate(-2deg); filter: drop-shadow(0 0 40px rgba(245,166,35,0.8)); }
+  50%      { transform: scale(1.08) rotate(2deg); filter: drop-shadow(0 0 70px rgba(245,166,35,1)); }
+}
+.pack-phase-icon { animation: packIdle 1.5s ease-in-out infinite; }
+
+.pack-phase-title {
+  font-family: 'Bebas Neue', cursive; font-size: 28px; letter-spacing: 6px;
+  color: rgba(255,255,255,0.6); text-align: center;
+}
+.tap-hint {
+  font-family: 'Barlow Condensed', sans-serif; font-size: 14px; letter-spacing: 3px;
+  color: var(--accent); opacity: 0.8; animation: blink 1.2s ease-in-out infinite;
+  text-transform: uppercase;
+}
+@keyframes blink { 0%,100%{opacity:0.4} 50%{opacity:1} }
+
+/* Phase 2: BURST */
+@keyframes burstScale {
+  0%   { transform: scale(0) rotate(-10deg); opacity: 0; }
+  40%  { transform: scale(1.3) rotate(5deg); opacity: 1; }
+  70%  { transform: scale(0.95) rotate(-2deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+.burst-overlay {
+  position: fixed; inset: 0; z-index: 201;
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none;
+}
+.burst-ring {
+  position: absolute; border-radius: 50%;
+  animation: expandRing 0.8s ease-out both;
+}
+@keyframes expandRing {
+  from { width: 0; height: 0; opacity: 1; }
+  to   { width: 800px; height: 800px; opacity: 0; }
+}
+
+/* Phase 3: Cards reveal */
+.cards-phase {
+  width: 100%; max-width: 860px; padding: 0 12px;
+  display: none; flex-direction: column; align-items: center; gap: 20px;
+}
+.cards-phase.show { display: flex; }
+
+.open-pack-label {
+  font-family: 'Bebas Neue', cursive; font-size: 22px; letter-spacing: 5px;
+  color: var(--accent); text-align: center;
+}
+
+.reveal-cards-grid {
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: 10px; max-height: 60vh; overflow-y: auto; padding: 8px 4px;
+}
+.reveal-cards-grid::-webkit-scrollbar { width: 3px; }
+.reveal-cards-grid::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+
+/* FIFA-style player card */
+.fifa-card {
+  width: 96px; height: 140px;
+  border-radius: 10px; position: relative; overflow: hidden;
+  cursor: default; flex-shrink: 0;
+  animation: cardFlip 0.6s cubic-bezier(0.34,1.56,0.64,1) both;
+  border: 2px solid var(--rc, rgba(255,255,255,0.2));
+}
+@keyframes cardFlip {
+  0%   { transform: perspective(600px) rotateY(90deg) scale(0.7); opacity: 0; }
+  100% { transform: perspective(600px) rotateY(0deg) scale(1); opacity: 1; }
+}
+.fifa-card-bg {
+  position: absolute; inset: 0;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--rc,#333) 18%, #050912 82%) 0%, #050912 100%);
+}
+.fifa-card-shine {
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 50%);
+}
+.fifa-card-pattern {
+  position: absolute; inset: 0;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent, transparent 8px,
+    rgba(255,255,255,0.015) 8px, rgba(255,255,255,0.015) 9px
+  );
+}
+.fifa-rating {
+  position: absolute; top: 7px; left: 8px;
+  font-family: 'Bebas Neue', cursive; font-size: 28px; line-height: 1;
+  color: var(--rc, #fff);
+  text-shadow: 0 0 12px var(--rc,rgba(255,255,255,0.3)), 0 2px 4px rgba(0,0,0,0.8);
+  z-index: 2;
+}
+.fifa-pos {
+  position: absolute; top: 38px; left: 8px;
+  font-family: 'Barlow Condensed', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.5px;
+  color: rgba(255,255,255,0.55); z-index: 2;
+}
+.fifa-rarity-bar {
+  position: absolute; top: 0; right: 0; bottom: 0; width: 18px;
+  background: linear-gradient(to bottom, var(--rc, rgba(255,255,255,0.1)), transparent);
+  opacity: 0.3;
+}
+.fifa-avatar {
+  position: absolute; top: 14px; right: 6px;
+  width: 52px; height: 52px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  z-index: 2;
+}
+.fifa-divider {
+  position: absolute; top: 72px; left: 6px; right: 6px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--rc,rgba(255,255,255,0.2)), transparent);
+  z-index: 2;
+}
+.fifa-name {
+  position: absolute; bottom: 32px; left: 0; right: 0; text-align: center;
+  font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700;
+  color: #fff; padding: 0 4px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; z-index: 2;
+}
+.fifa-flag-nat {
+  position: absolute; bottom: 14px; left: 0; right: 0; text-align: center;
+  font-size: 10px; color: rgba(255,255,255,0.45); z-index: 2;
+}
+.fifa-rarity-badge {
+  position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);
+  font-family: 'Barlow Condensed', sans-serif; font-size: 7px; font-weight: 800; letter-spacing: 1px;
+  padding: 1px 6px; border-radius: 3px;
+  background: var(--rc); color: #000; white-space: nowrap; z-index: 2;
+}
+.fifa-count-badge {
+  position: absolute; top: 5px; right: 5px; z-index: 5;
+  font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700;
+  background: rgba(0,0,0,0.7); color: #fff; border-radius: 4px; padding: 1px 5px;
+}
+/* Chromatic shimmer */
+@keyframes chromaShift {
+  0% { filter: hue-rotate(0deg) brightness(1.2) saturate(1.5); }
+  100% { filter: hue-rotate(360deg) brightness(1.2) saturate(1.5); }
+}
+.chromatic-card { animation: cardFlip 0.6s cubic-bezier(0.34,1.56,0.64,1) both, chromaShift 2.5s linear infinite; }
+.chromatic-card .fifa-card-bg {
+  background: linear-gradient(135deg, #1a0030, #001a35, #1a1a00, #001a10) !important;
+  animation: chromaBg 3s linear infinite;
+}
+@keyframes chromaBg {
+  0%{background:linear-gradient(135deg,#1a0030,#001a35,#1a1a00,#001a10)}
+  33%{background:linear-gradient(135deg,#001a35,#1a1a00,#001a10,#1a0030)}
+  66%{background:linear-gradient(135deg,#1a1a00,#001a10,#1a0030,#001a35)}
+  100%{background:linear-gradient(135deg,#1a0030,#001a35,#1a1a00,#001a10)}
+}
+/* Godlike pulse */
+@keyframes godPulse {
+  0%,100% { box-shadow: 0 0 10px 3px #FFD700, 0 0 0 2px #FFD700; }
+  50%      { box-shadow: 0 0 30px 8px #FFD700, 0 0 0 2px #fff; }
+}
+.godlike-card { animation: cardFlip 0.6s cubic-bezier(0.34,1.56,0.64,1) both, godPulse 2s ease-in-out infinite; }
+/* Secret wave */
+@keyframes secretWave {
+  0%   { background-position: 0% 0%; }
+  100% { background-position: 0% 250%; }
+}
+.secret-name {
+  background: linear-gradient(to bottom, #fff 0%, #fff 33%, #888 33%, #888 66%, #fff 66%, #fff 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  animation: secretWave 1.5s linear infinite reverse;
+  background-size: 100% 250%;
+}
+
+.overlay-actions {
+  display: flex; gap: 10px; margin-top: 4px;
+}
+.overlay-btn {
+  padding: 12px 30px; border-radius: 30px;
+  font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 2px;
+  cursor: pointer; transition: transform 0.15s, opacity 0.15s; text-transform: uppercase;
+  border: none;
+}
+.overlay-btn:hover { transform: scale(1.05); }
+.overlay-btn-primary {
+  background: linear-gradient(135deg, #F5A623, #E8375A); color: #fff;
+}
+.overlay-btn-secondary {
+  background: transparent; border: 1px solid var(--border); color: #ccc;
+}
+
+/* ═══════════════════════════════════════════
+   COLLECTION (FIFA Squad Style)
+═══════════════════════════════════════════ */
+.col-controls {
+  display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; align-items: center;
+}
+.search-box {
+  flex: 1; min-width: 130px; max-width: 230px;
+  background: rgba(0,0,0,0.5); border: 1px solid var(--border);
+  border-radius: 8px; padding: 7px 12px;
+  color: var(--text); font-size: 13px; font-family: 'Barlow', sans-serif;
+  outline: none;
+}
+.search-box:focus { border-color: rgba(245,166,35,0.4); }
+.search-box::placeholder { color: var(--muted); }
+
+.filter-scroll {
+  display: flex; gap: 5px; overflow-x: auto; padding-bottom: 2px;
+  scrollbar-width: none; -ms-overflow-style: none; flex-shrink: 0;
+}
+.filter-scroll::-webkit-scrollbar { display: none; }
+.filter-pill {
+  flex-shrink: 0; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 700;
+  font-family: 'Barlow Condensed', sans-serif; letter-spacing: 1px;
+  border: 1px solid var(--border); background: transparent;
+  cursor: pointer; color: var(--muted); transition: all 0.15s; white-space: nowrap;
+}
+.filter-pill.active { background: rgba(255,255,255,0.08); color: #ccc; border-color: rgba(255,255,255,0.2); }
+
+.sort-select {
+  background: rgba(0,0,0,0.5); border: 1px solid var(--border);
+  color: #ccc; font-size: 12px; padding: 5px 8px; border-radius: 8px;
+  font-family: 'Barlow', sans-serif; cursor: pointer; outline: none; flex-shrink: 0;
+}
+
+.col-meta { font-size: 12px; color: var(--muted); white-space: nowrap; flex-shrink: 0; }
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 8px; max-height: 55vh; overflow-y: auto; padding-right: 4px;
+}
+.cards-grid::-webkit-scrollbar { width: 3px; }
+.cards-grid::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+.empty-col { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 14px; grid-column: 1/-1; }
+
+/* ═══════════════════════════════════════════
+   DROPS — FIFA Daily Rewards
+═══════════════════════════════════════════ */
+.drops-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+@media (max-width: 500px) { .drops-grid { grid-template-columns: repeat(2, 1fr); } }
+
+.drop-card {
+  background: rgba(0,0,0,0.45); border: 1px solid var(--border);
+  border-radius: 16px; padding: 18px 12px 14px; text-align: center;
+  cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden;
+}
+.drop-card:hover { border-color: rgba(245,166,35,0.3); background: rgba(245,166,35,0.04); }
+.drop-card.ready { border-color: rgba(0,229,153,0.45); background: rgba(0,229,153,0.04); }
+.drop-card.ready::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: var(--green); border-radius: 16px 16px 0 0;
+}
+.drop-icon { font-size: 36px; margin-bottom: 8px; }
+.drop-name { font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 800; letter-spacing: 2px; color: #ccc; margin-bottom: 4px; text-transform: uppercase; }
+.drop-reward { font-size: 11px; color: var(--muted); margin-bottom: 8px; }
+.drop-timer { font-size: 12px; color: var(--muted); }
+.time-val { color: var(--accent); font-weight: 700; font-family: 'Barlow Condensed', sans-serif; font-size: 14px; }
+.drop-claimed { color: var(--green); font-size: 13px; font-weight: 700; font-family: 'Barlow Condensed', sans-serif; letter-spacing: 1px; }
+.progress-bar { height: 3px; background: rgba(255,255,255,0.07); border-radius: 2px; margin-top: 8px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--accent), var(--green)); transition: width 0.3s; }
+
+/* ═══════════════════════════════════════════
+   STATS
+═══════════════════════════════════════════ */
+.stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px; }
+.stat-box {
+  background: rgba(0,0,0,0.45); border: 1px solid var(--border);
+  border-radius: 16px; padding: 18px; text-align: center;
+}
+.stat-num { font-family: 'Bebas Neue', cursive; font-size: 44px; color: var(--accent); line-height: 1; }
+.stat-label { font-size: 10px; color: var(--muted); letter-spacing: 2px; margin-top: 3px; text-transform: uppercase; font-family: 'Barlow Condensed', sans-serif; }
+
+.rarity-section { background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 16px; padding: 18px; }
+.rarity-section-title { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; color: var(--muted); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 14px; font-weight: 700; }
+.rarity-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.rarity-row-name { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; color: #ccc; width: 82px; flex-shrink: 0; font-weight: 700; letter-spacing: 0.5px; }
+.rarity-row-track { flex: 1; height: 5px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; }
+.rarity-row-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+.rarity-row-cnt { font-size: 10px; color: var(--muted); width: 60px; text-align: right; flex-shrink: 0; font-family: 'Barlow Condensed', sans-serif; }
+
+/* ─── TOAST ─── */
+.toast {
+  position: fixed; bottom: 76px; left: 50%; transform: translateX(-50%) translateY(10px);
+  background: rgba(15,18,30,0.98); border: 1px solid var(--border);
+  padding: 10px 24px; border-radius: 30px; font-size: 13px; color: #ccc;
+  z-index: 300; opacity: 0; transition: opacity 0.25s, transform 0.25s;
+  pointer-events: none; white-space: nowrap; font-weight: 500;
+  font-family: 'Barlow Condensed', sans-serif; letter-spacing: 0.5px;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ─── PARTICLES ─── */
+.particle {
+  position: fixed; pointer-events: none; z-index: 202;
+  border-radius: 50%; animation: particleFly 1.2s ease-out both;
+}
+@keyframes particleFly {
+  0%   { transform: translate(0,0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
+}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 4px; }
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+
+<div class="app">
+  <!-- HEADER -->
+  <div class="header">
+    <div>
+      <div class="logo">⚽ ULTRADROP</div>
+      <div class="logo-sub">SAISON 2025/26 · EDITION 1</div>
+    </div>
+    <div class="currency-bar">
+      <div class="currency-chip"><span class="chip-icon">🪙</span><span class="c-coins" id="coins">5.000</span></div>
+      <div class="currency-chip"><span class="chip-icon">💎</span><span class="c-gems" id="gems">100</span></div>
+      <div class="currency-chip"><span class="chip-icon">🃏</span><span class="c-cards" id="card-count">0</span></div>
+    </div>
+  </div>
+
+  <!-- PACKS PANEL -->
+  <div class="panel active" id="panel-packs">
+    <div class="section-title">Featured Pack</div>
+    <!-- Featured pack rendered by JS -->
+    <div id="featured-pack-area"></div>
+
+    <div class="packs-row-title" id="packs-row-label">Alle Packs</div>
+    <div class="packs-row" id="packs-grid"></div>
+  </div>
+
+  <!-- DROPS PANEL -->
+  <div class="panel" id="panel-drops">
+    <div class="section-title">Tägliche Belohnungen</div>
+    <div class="drops-grid" id="drops-grid"></div>
+  </div>
+
+  <!-- COLLECTION PANEL -->
+  <div class="panel" id="panel-collection">
+    <div class="section-title">Meine Sammlung</div>
+    <div class="col-controls">
+      <input class="search-box" type="text" placeholder="🔍 Spieler suchen…" id="search-box" oninput="renderCollection()">
+      <div class="filter-scroll" id="filter-btns">
+        <button class="filter-pill active" onclick="filterCards('all',this)">Alle</button>
+        <button class="filter-pill" onclick="filterCards('Common',this)" style="color:#4A90D9">Common</button>
+        <button class="filter-pill" onclick="filterCards('Uncommon',this)" style="color:#2ECC71">Uncommon</button>
+        <button class="filter-pill" onclick="filterCards('Rare',this)" style="color:#9B59F5">Rare</button>
+        <button class="filter-pill" onclick="filterCards('Super Rare',this)" style="color:#F39C12">Super Rare</button>
+        <button class="filter-pill" onclick="filterCards('Epic',this)" style="color:#E8375A">Epic</button>
+        <button class="filter-pill" onclick="filterCards('Mythic',this)" style="color:#FFD700">Mythic</button>
+        <button class="filter-pill" onclick="filterCards('Legendary',this)" style="color:#FF6B00">Legendary</button>
+        <button class="filter-pill" onclick="filterCards('Chromatic',this)" style="color:#ff88ff">Chromatic</button>
+        <button class="filter-pill" onclick="filterCards('Secret',this)" style="color:#ccc">Secret</button>
+        <button class="filter-pill" onclick="filterCards('Godlike',this)" style="color:#FFD700">Godlike</button>
+      </div>
+      <select class="sort-select" id="sort-select" onchange="renderCollection()">
+        <option value="rating">Rating ↓</option>
+        <option value="name">Name A–Z</option>
+        <option value="rarity">Seltenheit</option>
+        <option value="count">Anzahl ↓</option>
+      </select>
+      <span class="col-meta" id="col-count">0 Karten</span>
+    </div>
+    <div class="cards-grid" id="cards-grid">
+      <div class="empty-col">Noch keine Karten — öffne ein Pack!</div>
+    </div>
+  </div>
+
+  <!-- STATS PANEL -->
+  <div class="panel" id="panel-stats">
+    <div class="section-title">Statistiken</div>
+    <div class="stats-grid">
+      <div class="stat-box"><div class="stat-num" id="s-opened">0</div><div class="stat-label">Packs Geöffnet</div></div>
+      <div class="stat-box"><div class="stat-num" id="s-cards">0</div><div class="stat-label">Karten Gesamt</div></div>
+      <div class="stat-box"><div class="stat-num" id="s-rare">0</div><div class="stat-label">Seltene Karten</div></div>
+      <div class="stat-box"><div class="stat-num" id="s-spent">0</div><div class="stat-label">Münzen Ausgegeben</div></div>
+    </div>
+    <div class="rarity-section">
+      <div class="rarity-section-title">Seltenheitsverteilung</div>
+      <div id="rarity-bars"></div>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="nav-wrapper">
+  <div class="bottom-nav">
+    <button class="nav-btn active" id="nav-packs" onclick="switchTab('packs',this)">
+      <span class="nav-icon">📦</span>PACKS
+    </button>
+    <button class="nav-btn" id="nav-drops" onclick="switchTab('drops',this)">
+      <span class="nav-icon">🎁</span>DROPS
+    </button>
+    <button class="nav-btn" id="nav-collection" onclick="switchTab('collection',this)">
+      <span class="nav-icon">📋</span>SAMMLUNG
+    </button>
+    <button class="nav-btn" id="nav-stats" onclick="switchTab('stats',this)">
+      <span class="nav-icon">📊</span>STATS
+    </button>
+  </div>
+</div>
+
+<!-- PACK OPENING OVERLAY -->
+<div class="pack-opening-overlay" id="pack-opening-overlay">
+  <div class="pack-phase" id="pack-phase">
+    <div class="pack-phase-icon" id="pack-phase-icon">📦</div>
+    <div class="pack-phase-title" id="pack-phase-title">LEGEND PACK</div>
+    <div class="tap-hint">TIPPEN ZUM ÖFFNEN</div>
+  </div>
+  <div class="cards-phase" id="cards-phase">
+    <div class="open-pack-label" id="open-pack-label">PACK GEÖFFNET!</div>
+    <div class="reveal-cards-grid" id="reveal-cards-grid"></div>
+    <div class="overlay-actions">
+      <button class="overlay-btn overlay-btn-secondary" onclick="closeOverlay()">SCHLIESSEN</button>
+      <button class="overlay-btn overlay-btn-primary" id="open-again-btn">NOCHMAL ▶</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════
+//  DATA
+// ══════════════════════════════════════════════════
+const RARITIES = [
+  { name:'Common',    color:'#4A90D9', chance:0.42, minR:58, maxR:72 },
+  { name:'Uncommon',  color:'#2ECC71', chance:0.24, minR:67, maxR:78 },
+  { name:'Rare',      color:'#9B59F5', chance:0.14, minR:74, maxR:83 },
+  { name:'Super Rare',color:'#F39C12', chance:0.08, minR:80, maxR:88 },
+  { name:'Epic',      color:'#E8375A', chance:0.04, minR:85, maxR:91 },
+  { name:'Mythic',    color:'#FFD700', chance:0.025,minR:89, maxR:94 },
+  { name:'Legendary', color:'#FF6B00', chance:0.012,minR:93, maxR:97 },
+  { name:'Chromatic', color:'#ff88ff', chance:0.005,minR:95, maxR:99 },
+  { name:'Secret',    color:'#cccccc', chance:0.002,minR:97, maxR:99 },
+  { name:'Godlike',   color:'#FFD700', chance:0.001,minR:99, maxR:99 },
+];
+
+const POSITIONS = ['GK','CB','LB','RB','CDM','CM','CAM','LW','RW','ST','CF'];
+const NATIONS = {
+  DE:'🇩🇪',FR:'🇫🇷',ES:'🇪🇸',PT:'🇵🇹',AR:'🇦🇷',BR:'🇧🇷',EN:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',IT:'🇮🇹',
+  NL:'🇳🇱',BE:'🇧🇪',HR:'🇭🇷',SN:'🇸🇳',MA:'🇲🇦',NG:'🇳🇬',GH:'🇬🇭',UA:'🇺🇦',
+  AT:'🇦🇹',CH:'🇨🇭',DK:'🇩🇰',NO:'🇳🇴',SE:'🇸🇪',PL:'🇵🇱',TR:'🇹🇷',MX:'🇲🇽',
+  US:'🇺🇸',JP:'🇯🇵',KR:'🇰🇷',CM:'🇨🇲',CI:'🇨🇮',ML:'🇲🇱',GN:'🇬🇳',GA:'🇬🇦',
+  CO:'🇨🇴',UY:'🇺🇾',CL:'🇨🇱',EG:'🇪🇬',AL:'🇦🇱',SK:'🇸🇰',CZ:'🇨🇿',RS:'🇷🇸',
+  SI:'🇸🇮',RO:'🇷🇴',HU:'🇭🇺',GE:'🇬🇪',EC:'🇪🇨',PA:'🇵🇦',JM:'🇯🇲',TN:'🇹🇳',
+};
+const POS_EMOJI = { GK:'🧤',CB:'🛡️',LB:'⬅️',RB:'➡️',CDM:'🏃',CM:'⚙️',CAM:'🎯',LW:'⚡',RW:'🔥',ST:'⚽',CF:'💥' };
+
+const PLAYERS_RAW = [
+['M. Neuer','GK','DE'],['K. Havertz','CAM','DE'],['J. Kimmich','CDM','DE'],
+['T. Müller','CAM','DE'],['L. Sané','RW','DE'],['J. Wirtz','CAM','DE'],
+['R. Musiala','CAM','DE'],['A. Rüdiger','CB','DE'],['L. Goretzka','CM','DE'],
+['N. Schlotterbeck','CB','DE'],['D. Raum','LB','DE'],['K. Gnabry','RW','DE'],
+['T. Werner','ST','DE'],['M. Ter Stegen','GK','DE'],['J. Tah','CB','DE'],
+['C. Nkunku','CAM','DE'],['I. Gündogan','CM','DE'],['B. Füllkrug','ST','DE'],
+['N. Süle','CB','DE'],['K. Adeyemi','LW','DE'],['M. Sabitzer','CM','DE'],
+['R. Andrich','CDM','DE'],['G. Xhaka','CDM','DE'],['M. Hummels','CB','DE'],
+['F. Kroos','CM','DE'],['L. Reus','CAM','DE'],
+['K. Mbappé','ST','FR'],['A. Griezmann','CAM','FR'],['O. Dembélé','RW','FR'],
+['A. Tchouaméni','CDM','FR'],['A. Camavinga','CM','FR'],['M. Maignan','GK','FR'],
+['M. Saliba','CB','FR'],['Y. Konaté','CB','FR'],['N. Zaire-Emery','CM','FR'],
+['K. Coman','RW','FR'],['B. Kolo Muani','ST','FR'],['Y. Cherki','CAM','FR'],
+['R. Benzema','ST','FR'],['K. Thuram','ST','FR'],['M. Thuram','LW','FR'],
+['V. Junior','LW','BR'],['J. Bellingham','CAM','EN'],['R. Yamal','RW','ES'],
+['P. Gavi','CM','ES'],['D. Olmo','CAM','ES'],['A. Grimaldo','LB','ES'],
+['M. Oyarzabal','ST','ES'],['N. Williams','LW','ES'],['Y. Williams','ST','ES'],
+['A. Morata','ST','ES'],['R. Rodrigo','CDM','ES'],
+['C. Ronaldo','ST','PT'],['B. Fernandes','CAM','PT'],['J. Cancelo','RB','PT'],
+['R. Dias','CB','PT'],['B. Silva','CAM','PT'],['G. Ramos','ST','PT'],
+['D. Jota','LW','PT'],['F. Leão','LW','PT'],['M. Vitinha','CM','PT'],
+['J. Palhinha','CDM','PT'],['O. Neves','CDM','PT'],
+['L. Messi','CAM','AR'],['L. Martínez','ST','AR'],['P. Dybala','CAM','AR'],
+['A. Mac Allister','CM','AR'],['R. De Paul','CM','AR'],['C. Romero','CB','AR'],
+['E. Martínez','GK','AR'],['J. Alvarez','ST','AR'],['A. Di María','RW','AR'],
+['R. Vinicius Jr','LW','BR'],['R. Endrick','ST','BR'],['R. Rodrygo','RW','BR'],
+['R. Raphinha','RW','BR'],['A. Militão','CB','BR'],['T. Silva','CB','BR'],
+['C. Casemiro','CDM','BR'],['L. Paquetá','CAM','BR'],['E. Ederson','GK','BR'],
+['A. Alisson','GK','BR'],['R. Richarlison','ST','BR'],['G. Gabriel Jesus','ST','BR'],
+['D. Núñez','ST','UY'],['F. Valverde','CM','UY'],['R. Araújo','CB','UY'],
+['L. Suárez','ST','UY'],['F. Bentancur','CM','UY'],
+['L. Díaz','LW','CO'],['J. Cuadrado','RW','CO'],['R. Falcao','ST','CO'],
+['J. Saka','RW','EN'],['P. Foden','CAM','EN'],['D. Rice','CDM','EN'],
+['H. Kane','ST','EN'],['T. Alexander-Arnold','RB','EN'],['C. Palmer','CAM','EN'],
+['G. Mainoo','CM','EN'],['M. Rashford','LW','EN'],['B. Saka','RW','EN'],
+['E. Pickford','GK','EN'],['M. Grealish','LW','EN'],['O. Watkins','ST','EN'],
+['G. Donnarumma','GK','IT'],['F. Chiesa','RW','IT'],['N. Barella','CM','IT'],
+['G. Locatelli','CDM','IT'],['A. Bastoni','CB','IT'],['R. Frattesi','CM','IT'],
+['C. Immobile','ST','IT'],['G. Scamacca','ST','IT'],['M. Retegui','ST','IT'],
+['M. Tonali','CM','IT'],['F. Pellegrini','CAM','IT'],
+['V. van Dijk','CB','NL'],['M. de Ligt','CB','NL'],['D. Dumfries','RB','NL'],
+['F. de Jong','CM','NL'],['C. Gakpo','LW','NL'],['B. Koopmeiners','CM','NL'],
+['T. Reijnders','CM','NL'],['G. Simons','CAM','NL'],
+['K. De Bruyne','CAM','BE'],['R. Lukaku','ST','BE'],['T. Hazard','LW','BE'],
+['T. Courtois','GK','BE'],['S. Debast','CB','BE'],
+['E. Haaland','ST','NO'],['M. Ødegaard','CAM','NO'],
+['S. Son','LW','KR'],['M. Salah','RW','EG'],['O. Marmoush','CAM','EG'],
+['R. Lewandowski','ST','PL'],['P. Zieliński','CM','PL'],
+['H. Lozano','RW','MX'],['R. Jiménez','ST','MX'],
+['D. Pulisic','LW','US'],['G. Reyna','CAM','US'],['M. Musah','CM','US'],
+['S. Kubo','RW','JP'],['H. Mitoma','LW','JP'],
+['A. Hakimi','RB','MA'],['Y. En-Nesyri','ST','MA'],['H. Ziyech','CAM','MA'],
+['V. Osimhen','ST','NG'],['A. Lookman','RW','NG'],
+['T. Partey','CDM','GH'],['L. Kudus','CAM','GH'],
+['S. Mané','LW','SN'],['A. Sarr','RW','SN'],
+['L. Modrić','CM','HR'],['I. Gvardiol','CB','HR'],['B. Šeško','ST','SI'],
+['D. Alaba','CB','AT'],['K. Laimer','CM','AT'],
+['X. Shaqiri','RW','CH'],['M. Akanji','CB','CH'],['B. Embolo','ST','CH'],
+['C. Eriksen','CAM','DK'],['P. Højbjerg','CDM','DK'],
+['D. Kulusevski','RW','SE'],['A. Isak','ST','SE'],
+['K. Kvaratskhelia','LW','GE'],['G. Mamardashvili','GK','GE'],
+['M. Mitrović','ST','RS'],['D. Tadic','CAM','RS'],
+['A. Yıldız','RW','TR'],['H. Çalhanoğlu','CDM','TR'],['M. Güler','CAM','TR'],
+['B. Broja','ST','AL'],
+['J. Oblak','GK','SI'],
+['O. Zinchenko','LB','UA'],['M. Mudryk','LW','UA'],['M. Malinovskyi','CAM','UA'],
+];
+
+const PLAYERS = PLAYERS_RAW.map(([name, pos, nat]) => ({
+  name, pos, nat,
+  flag: NATIONS[nat] || '🏳️',
+  emoji: POS_EMOJI[pos] || '⚽'
+}));
+
+const PACKS = [
+  { id:'starter', name:'STARTER PACK', icon:'📦', desc:'Perfekt für Einsteiger · 3 Karten', color:'#4A90D9',
+    price:500, cur:'coins', count:3, guar:null, tag:'3 KARTEN',
+    odds:'42% Common · 24% Uncommon · 24% Rare+',
+    w:[0.42,0.28,0.16,0.07,0.025,0.015,0.005,0.003,0.001,0.001] },
+  { id:'pro', name:'PRO PACK', icon:'🏆', desc:'Min. Rare garantiert · 5 Karten', color:'#2ECC71',
+    price:1200, cur:'coins', count:5, guar:'Rare', tag:'5 KARTEN',
+    odds:'1× min. Rare garantiert',
+    w:[0.18,0.28,0.24,0.13,0.07,0.04,0.02,0.008,0.002,0.001] },
+  { id:'elite', name:'ELITE PACK', icon:'💎', desc:'Epic & Mythic-Chancen · 5 Karten', color:'#9B59F5',
+    price:2500, cur:'coins', count:5, guar:'Epic', tag:'5 KARTEN',
+    odds:'1× min. Epic garantiert',
+    w:[0.05,0.12,0.22,0.20,0.16,0.12,0.07,0.025,0.01,0.005] },
+  { id:'legend', name:'LEGEND PACK', icon:'⭐', desc:'Legendarische Stars · 8 Karten', color:'#F39C12',
+    price:5000, cur:'coins', count:8, guar:'Legendary', tag:'8 KARTEN',
+    odds:'1× min. Legendary garantiert',
+    w:[0.02,0.07,0.14,0.19,0.20,0.16,0.11,0.06,0.03,0.01] },
+  { id:'gem', name:'GEM PACK', icon:'💫', desc:'Exklusiv mit Gems · 5 Karten', color:'#5DADE2',
+    price:10, cur:'gems', count:5, guar:'Super Rare', tag:'5 KARTEN',
+    odds:'Premium Gems Pack',
+    w:[0.08,0.18,0.24,0.22,0.13,0.08,0.04,0.015,0.004,0.001] },
+  { id:'mega', name:'MEGA PACK', icon:'🌟', desc:'Das ultimative Pack · 12 Karten', color:'#E8375A',
+    price:9000, cur:'coins', count:12, guar:'Mythic', tag:'12 KARTEN',
+    odds:'1× min. Mythic · 12 Karten!',
+    w:[0.01,0.04,0.11,0.17,0.20,0.18,0.13,0.09,0.04,0.02] },
+];
+
+const DROPS = [
+  { id:'daily',  name:'DAILY DROP',    icon:'📅', reward:'+500🪙 · 60% Karte',       cd:86400  },
+  { id:'bonus',  name:'BONUS BOX',     icon:'🎁', reward:'+200🪙 · alle 4 Stunden',  cd:14400  },
+  { id:'weekly', name:'WEEKLY CHEST',  icon:'🏅', reward:'+2000🪙 · 1× Rare+ Karte', cd:604800 },
+  { id:'login',  name:'LOGIN BONUS',   icon:'🔑', reward:'+150🪙 · stündlich',        cd:3600   },
+  { id:'match',  name:'MATCH BONUS',   icon:'⚽', reward:'+100🪙 · alle 30 Min.',     cd:1800   },
+  { id:'streak', name:'STREAK CHEST',  icon:'🔥', reward:'+3000🪙 · 1× Epic+ Karte', cd:432000 },
+];
+
+let state = {
+  coins: 5000, gems: 100,
+  collection: [],
+  packsOpened: 0, coinsSpent: 0,
+  dropTimers: {},
+  filterRarity: 'all',
+  lastPackId: null,
+  pendingCards: null,
+};
+
+// ══════════════════════════════════════════════════
+//  ROLL ENGINE — FIXED
+// ══════════════════════════════════════════════════
+function getRarity(weights) {
+  const r = Math.random(); let cum = 0;
+  for (let i = 0; i < weights.length; i++) {
+    cum += weights[i]; if (r <= cum) return RARITIES[i];
+  }
+  return RARITIES[0];
+}
+
+function rollCard(weights, guar = null) {
+  if (!weights || !Array.isArray(weights)) weights = RARITIES.map(r => r.chance);
+  let rarity = getRarity(weights);
+  if (guar) {
+    const minIdx = RARITIES.findIndex(r => r.name === guar);
+    const rarIdx = RARITIES.indexOf(rarity);
+    if (rarIdx < minIdx) {
+      const sub = weights.slice(minIdx);
+      const total = sub.reduce((a,b)=>a+b,0);
+      if (total > 0) {
+        let r2 = Math.random() * total, c = 0;
+        for (let i = 0; i < sub.length; i++) {
+          c += sub[i];
+          if (r2 <= c) { rarity = RARITIES[minIdx + i]; break; }
+        }
+      } else {
+        rarity = RARITIES[minIdx];
+      }
+    }
+  }
+  const player = PLAYERS[Math.floor(Math.random() * PLAYERS.length)];
+  const rating = Math.floor(rarity.minR + Math.random() * (rarity.maxR - rarity.minR + 1));
+  return { ...player, rarity: rarity.name, color: rarity.color, rating, id: Date.now() + Math.random() };
+}
+
+// ══════════════════════════════════════════════════
+//  OPEN PACK — FIXED (pack.w not pack.weights)
+// ══════════════════════════════════════════════════
+function openPack(packId) {
+  const pack = PACKS.find(p => p.id === packId);
+  if (!pack) return;
+  if (pack.cur === 'coins' && state.coins < pack.price) { showToast('⚠️ Zu wenig Münzen!'); return; }
+  if (pack.cur === 'gems'  && state.gems  < pack.price) { showToast('⚠️ Zu wenig Gems!');   return; }
+
+  if (pack.cur === 'coins') { state.coins -= pack.price; state.coinsSpent += pack.price; }
+  else state.gems -= pack.price;
+  state.packsOpened++;
+  state.lastPackId = packId;
+
+  const cards = [];
+  for (let i = 0; i < pack.count; i++) {
+    // FIX: use pack.w (not pack.weights)
+    cards.push(rollCard(pack.w, i === 0 ? pack.guar : null));
+  }
+  cards.forEach(c => state.collection.push(c));
+  updateCurrency(); updateCardCount();
+  showPackOpening(pack, cards);
+}
+
+function openAgain() {
+  closeOverlay();
+  setTimeout(() => {
+    if (state.lastPackId) openPack(state.lastPackId);
+  }, 80);
+}
+
+// ══════════════════════════════════════════════════
+//  FIFA-STYLE PACK OPENING
+// ══════════════════════════════════════════════════
+function showPackOpening(pack, cards) {
+  state.pendingCards = cards;
+  const overlay = document.getElementById('pack-opening-overlay');
+  const packPhase = document.getElementById('pack-phase');
+  const cardsPhase = document.getElementById('cards-phase');
+
+  document.getElementById('pack-phase-icon').textContent = pack.icon;
+  document.getElementById('pack-phase-title').textContent = pack.name;
+
+  packPhase.style.display = 'flex';
+  cardsPhase.style.display = 'none';
+  cardsPhase.classList.remove('show');
+
+  document.getElementById('open-again-btn').onclick = openAgain;
+
+  overlay.classList.add('show');
+
+  // Click to reveal
+  const onTap = () => {
+    overlay.removeEventListener('click', onTap);
+    triggerPackBurst(pack.color, cards);
+  };
+  overlay.addEventListener('click', onTap);
+}
+
+function triggerPackBurst(color, cards) {
+  // Spawn particles
+  spawnParticles(color);
+
+  const packPhase = document.getElementById('pack-phase');
+  const cardsPhase = document.getElementById('cards-phase');
+
+  packPhase.style.transition = 'opacity 0.3s, transform 0.3s';
+  packPhase.style.opacity = '0';
+  packPhase.style.transform = 'scale(1.5)';
+
+  setTimeout(() => {
+    packPhase.style.display = 'none';
+    packPhase.style.opacity = '';
+    packPhase.style.transform = '';
+    cardsPhase.style.display = 'flex';
+    setTimeout(() => cardsPhase.classList.add('show'), 10);
+
+    // Populate cards
+    const grid = document.getElementById('reveal-cards-grid');
+    grid.innerHTML = '';
+    document.getElementById('open-pack-label').textContent = `${cards.length} KARTEN ERHALTEN!`;
+
+    cards.forEach((card, i) => {
+      const el = buildFifaCard(card, i * 0.08);
+      grid.appendChild(el);
+    });
+  }, 350);
+}
+
+function spawnParticles(color) {
+  const cx = window.innerWidth / 2;
+  const cy = window.innerHeight / 2;
+  const colors = [color, '#FFD700', '#fff', '#E8375A', color];
+  for (let i = 0; i < 32; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const angle = (i / 32) * 360;
+    const dist = 120 + Math.random() * 200;
+    const rad = angle * Math.PI / 180;
+    const dx = Math.cos(rad) * dist;
+    const dy = Math.sin(rad) * dist;
+    const size = 5 + Math.random() * 8;
+    p.style.cssText = `
+      left:${cx}px; top:${cy}px;
+      width:${size}px; height:${size}px;
+      background:${colors[i % colors.length]};
+      --dx:${dx}px; --dy:${dy}px;
+      animation-duration:${0.8 + Math.random() * 0.6}s;
+      animation-delay:${Math.random() * 0.1}s;
+    `;
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 1500);
+  }
+}
+
+function buildFifaCard(card, delay = 0) {
+  const el = document.createElement('div');
+  let cls = 'fifa-card';
+  if (card.rarity === 'Chromatic') cls += ' chromatic-card';
+  if (card.rarity === 'Godlike')   cls += ' godlike-card';
+  el.className = cls;
+  el.style.cssText = `--rc:${card.color}; animation-delay:${delay}s`;
+
+  const nameEl = card.rarity === 'Secret'
+    ? `<div class="fifa-name secret-name">${card.name}</div>`
+    : `<div class="fifa-name">${card.name}</div>`;
+
+  el.innerHTML = `
+    <div class="fifa-card-bg"></div>
+    <div class="fifa-card-pattern"></div>
+    <div class="fifa-card-shine"></div>
+    <div class="fifa-rarity-bar"></div>
+    <div class="fifa-rating">${card.rating}</div>
+    <div class="fifa-pos">${card.pos}</div>
+    <div class="fifa-avatar">${card.emoji}</div>
+    <div class="fifa-divider"></div>
+    ${nameEl}
+    <div class="fifa-flag-nat">${card.flag} ${card.nat}</div>
+    <div class="fifa-rarity-badge">${card.rarity}</div>
+  `;
+  return el;
+}
+
+function closeOverlay() {
+  document.getElementById('pack-opening-overlay').classList.remove('show');
+  renderCollection(); updateStats();
+}
+
+// ══════════════════════════════════════════════════
+//  DROPS — FIXED rollCard call
+// ══════════════════════════════════════════════════
+function claimDrop(id) {
+  const drop = DROPS.find(d => d.id === id);
+  if (!drop) return;
+  const now = Date.now(), last = state.dropTimers[id] || 0;
+  if (now - last < drop.cd * 1000) { showToast('⏳ Noch nicht verfügbar!'); return; }
+  state.dropTimers[id] = now;
+  const coins = Math.floor(Math.random() * 600) + 100;
+  state.coins += coins;
+  let msg = `+${coins} 🪙`;
+  if (Math.random() < 0.6) {
+    // FIX: pass proper weights array, not raw chances
+    const weights = RARITIES.map(r => r.chance);
+    const card = rollCard(weights, null);
+    state.collection.push(card);
+    msg += ` · 1× ${card.rarity} Karte!`;
+    updateCardCount();
+  }
+  updateCurrency(); renderDrops(); showToast('🎁 ' + msg);
+}
+
+// ══════════════════════════════════════════════════
+//  RENDER
+// ══════════════════════════════════════════════════
+function renderPacks() {
+  // Featured: rotate daily
+  const featuredIdx = Math.floor(Date.now() / 86400000) % PACKS.length;
+  const featured = PACKS[featuredIdx];
+  const featArea = document.getElementById('featured-pack-area');
+  const ok = featured.cur === 'coins' ? state.coins >= featured.price : state.gems >= featured.price;
+  const priceStr = featured.cur === 'coins' ? `🪙 ${featured.price.toLocaleString('de')}` : `💎 ${featured.price}`;
+  featArea.innerHTML = `
+    <div class="packs-featured" onclick="openPack('${featured.id}')">
+      <div class="featured-icon">${featured.icon}</div>
+      <div class="featured-info">
+        <div class="featured-badge">⭐ FEATURED PACK</div>
+        <div class="featured-name">${featured.name}</div>
+        <div class="featured-desc">${featured.desc}</div>
+        <div class="featured-price">${priceStr}</div>
+      </div>
+    </div>
+  `;
+  if (!ok) featArea.querySelector('.packs-featured').style.opacity = '0.5';
+
+  const grid = document.getElementById('packs-grid');
+  grid.innerHTML = '';
+  const otherPacks = PACKS.filter((_, i) => i !== featuredIdx);
+  otherPacks.forEach(pack => {
+    const canAfford = pack.cur === 'coins' ? state.coins >= pack.price : state.gems >= pack.price;
+    const priceStr = pack.cur === 'coins' ? `🪙 ${pack.price.toLocaleString('de')}` : `💎 ${pack.price}`;
+    const el = document.createElement('div');
+    el.className = 'pack-tile' + (!canAfford ? ' locked' : '');
+    el.style.setProperty('--tc', pack.color);
+    el.innerHTML = `
+      <span class="pack-tile-icon">${pack.icon}</span>
+      <div class="pack-tile-name">${pack.name}</div>
+      <div class="pack-tile-count">${pack.tag}</div>
+      <div class="pack-tile-price">${priceStr}</div>
+    `;
+    el.onclick = () => openPack(pack.id);
+    grid.appendChild(el);
+  });
+}
+
+function renderDrops() {
+  const grid = document.getElementById('drops-grid');
+  grid.innerHTML = '';
+  const now = Date.now();
+  DROPS.forEach(drop => {
+    const last = state.dropTimers[drop.id] || 0;
+    const elapsed = now - last;
+    const ready = elapsed >= drop.cd * 1000;
+    const remaining = Math.max(0, drop.cd * 1000 - elapsed);
+    const progress = Math.min(1, elapsed / (drop.cd * 1000));
+    const hrs = Math.floor(remaining / 3600000);
+    const mins = Math.floor((remaining % 3600000) / 60000);
+    const timeStr = hrs > 0 ? `${hrs}h ${mins}m` : `${mins}m`;
+    const el = document.createElement('div');
+    el.className = 'drop-card' + (ready ? ' ready' : '');
+    el.innerHTML = `
+      <div class="drop-icon">${drop.icon}</div>
+      <div class="drop-name">${drop.name}</div>
+      <div class="drop-reward">${drop.reward}</div>
+      <div class="drop-timer">${ready
+        ? '<span class="drop-claimed">✅ VERFÜGBAR!</span>'
+        : `<span class="time-val">${timeStr}</span> verbleibend`}</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${Math.round(progress*100)}%"></div></div>
+    `;
+    el.onclick = () => claimDrop(drop.id);
+    grid.appendChild(el);
+  });
+}
+
+function renderCollection() {
+  const grid = document.getElementById('cards-grid');
+  const query = (document.getElementById('search-box')?.value || '').toLowerCase();
+  const sort = document.getElementById('sort-select')?.value || 'rating';
+  const rarityOrder = Object.fromEntries(RARITIES.map((r,i) => [r.name, RARITIES.length - i]));
+
+  let filtered = state.collection.filter(c => {
+    const matchRarity = state.filterRarity === 'all' || c.rarity === state.filterRarity;
+    const matchSearch = !query || c.name.toLowerCase().includes(query) ||
+      c.pos.toLowerCase().includes(query) || c.nat.toLowerCase().includes(query);
+    return matchRarity && matchSearch;
+  });
+
+  const grouped = {};
+  filtered.forEach(c => {
+    const key = `${c.name}-${c.rarity}`;
+    if (!grouped[key]) grouped[key] = { ...c, count: 0 };
+    grouped[key].count++;
+  });
+  let cards = Object.values(grouped);
+
+  if (sort === 'rating') cards.sort((a,b) => b.rating - a.rating);
+  else if (sort === 'name') cards.sort((a,b) => a.name.localeCompare(b.name));
+  else if (sort === 'rarity') cards.sort((a,b) => (rarityOrder[b.rarity]||0) - (rarityOrder[a.rarity]||0));
+  else if (sort === 'count') cards.sort((a,b) => b.count - a.count);
+
+  document.getElementById('col-count').textContent = `${state.collection.length} Karten · ${cards.length} unique`;
+
+  if (cards.length === 0) {
+    grid.innerHTML = '<div class="empty-col">Keine Karten gefunden</div>'; return;
+  }
+
+  grid.innerHTML = '';
+  cards.forEach(card => {
+    const el = buildFifaCard(card, 0);
+    if (card.count > 1) {
+      const badge = document.createElement('div');
+      badge.className = 'fifa-count-badge';
+      badge.textContent = `×${card.count}`;
+      el.appendChild(badge);
+    }
+    grid.appendChild(el);
+  });
+}
+
+function filterCards(rarity, btn) {
+  state.filterRarity = rarity;
+  document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderCollection();
+}
+
+function updateStats() {
+  document.getElementById('s-opened').textContent = state.packsOpened;
+  document.getElementById('s-cards').textContent = state.collection.length;
+  const rare = state.collection.filter(c => RARITIES.findIndex(r => r.name === c.rarity) >= 3).length;
+  document.getElementById('s-rare').textContent = rare;
+  document.getElementById('s-spent').textContent = state.coinsSpent.toLocaleString('de');
+
+  const barsEl = document.getElementById('rarity-bars');
+  barsEl.innerHTML = '';
+  if (state.collection.length === 0) {
+    barsEl.innerHTML = '<div style="color:var(--muted);font-size:12px">Noch keine Karten gesammelt</div>'; return;
+  }
+  RARITIES.forEach(r => {
+    const cnt = state.collection.filter(c => c.rarity === r.name).length;
+    const pct = Math.round(cnt / state.collection.length * 100);
+    const el = document.createElement('div');
+    el.className = 'rarity-row';
+    el.innerHTML = `
+      <div class="rarity-row-name" style="color:${r.color}">${r.name}</div>
+      <div class="rarity-row-track"><div class="rarity-row-fill" style="width:${pct}%;background:${r.color}"></div></div>
+      <div class="rarity-row-cnt">${cnt} (${pct}%)</div>
+    `;
+    barsEl.appendChild(el);
+  });
+}
+
+function updateCurrency() {
+  document.getElementById('coins').textContent = state.coins.toLocaleString('de');
+  document.getElementById('gems').textContent = state.gems;
+  renderPacks();
+}
+
+function updateCardCount() {
+  document.getElementById('card-count').textContent = state.collection.length;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+function switchTab(tab, btn) {
+  document.querySelectorAll('.nav-btn').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  document.getElementById('panel-' + tab).classList.add('active');
+  if (tab === 'collection') renderCollection();
+  if (tab === 'stats') updateStats();
+  if (tab === 'drops') renderDrops();
+}
+
+// ── INIT ──
+renderPacks();
+renderDrops();
+updateStats();
+setInterval(() => {
+  if (document.getElementById('panel-drops').classList.contains('active')) renderDrops();
+}, 30000);
+</script>
+</body>
+</html>
