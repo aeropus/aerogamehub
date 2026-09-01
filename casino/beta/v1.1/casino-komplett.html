@@ -610,15 +610,15 @@ footer{position:relative;z-index:2;text-align:center;padding:20px;color:rgba(245
       <div class="ticket-shop" id="ticketShop">
         <div class="tp sel" data-t="0" style="--tc1:#e8006f;--tc2:#ff7a00;" onclick="selTicket(0)">
           <span class="tp-ico">🍀</span><span class="tp-name">Kleeblatt</span>
-          <span class="tp-price">150 Cr.</span><span class="tp-odds">Bis zu ×20</span>
+          <span class="tp-price">5 Cr.</span><span class="tp-odds">Bis zu ×20</span>
         </div>
         <div class="tp" data-t="1" style="--tc1:#00d4ff;--tc2:#a0ff3c;" onclick="selTicket(1)">
           <span class="tp-ico">💎</span><span class="tp-name">Diamant</span>
-          <span class="tp-price">1250 Cr.</span><span class="tp-odds">Bis zu ×50</span>
+          <span class="tp-price">25 Cr.</span><span class="tp-odds">Bis zu ×50</span>
         </div>
         <div class="tp" data-t="2" style="--tc1:#ffe033;--tc2:#ff7a00;" onclick="selTicket(2)">
           <span class="tp-ico">👑</span><span class="tp-name">Royal</span>
-          <span class="tp-price">2500 Cr.</span><span class="tp-odds">Bis zu ×200</span>
+          <span class="tp-price">50 Cr.</span><span class="tp-odds">Bis zu ×200</span>
         </div>
       </div>
 
@@ -920,10 +920,10 @@ function evalCraps(tot,bet){
 /* ═══════════════════════════════════════
    SCRATCH CARDS
 ═══════════════════════════════════════ */
-const TICKET_TYPES=[
-  {name:'Kleeblatt',icon:'🍀',price:150,bg:['#180a28','#2d0f1e'],hGrad:'linear-gradient(135deg,#e8006f,#ff7a00)',scratchCol:'#b8925a',syms:['🍀','⭐','🌈','🎁','🔔','💫'],prizes:[0,5,5,5,5,25,25,50,100,100,100,150]},
-  {name:'Diamant',icon:'💎',price:1250,bg:['#001322','#002a44'],hGrad:'linear-gradient(135deg,#00d4ff,#a0ff3c)',scratchCol:'#5a7a9a',syms:['💎','⭐','🌊','💠','🪩','✨'],prizes:[0,0,0,30,45,90,800,1200,1200,1500,1500,2250]},
-  {name:'Royal',icon:'👑',price:2500,bg:['#1a1000','#2e1f00'],hGrad:'linear-gradient(135deg,#ffe033,#ff7a00)',scratchCol:'#7a6520',syms:['👑','💰','🏆','💎','🎰','🌟'],prizes:[0,0,0,500,1500,1500,1500,1500,2500,3000,3000]},
+const TicketTypes=[
+  {name:'Kleeblatt',icon:'🍀',price:5,bg:['#180a28','#2d0f1e'],hG:'linear-gradient(135deg,#e8006f,#ff7a00)',sc:'#b8925a',syms:['🍀','⭐','🌈','🎁','🔔','💫'],prizes:[0,0,0,5,5,10,10,20,50]},
+  {name:'Diamant',icon:'💎',price:20,bg:['#001322','#002a44'],hG:'linear-gradient(135deg,#00d4ff,#a0ff3c)',sc:'#5a7a9a',syms:['💎','⭐','🌊','💠','🪩','✨'],prizes:[0,0,0,20,20,40,100,200,500]},
+  {name:'Royal',icon:'👑',price:50,bg:['#1a1000','#2e1f00'],hG:'linear-gradient(135deg,#ffe033,#ff7a00)',sc:'#7a6520',syms:['👑','💰','🏆','💎','🎰','🌟'],prizes:[0,0,0,50,100,100,250,500,2500]},
 ];
 let selType=0;
 
